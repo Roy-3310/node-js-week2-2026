@@ -149,11 +149,15 @@ function handleUpload(req, res, config) {
     keepExtensions: true,
   });
 
-  //統一處理回傳訊息
   const sendJSON = (status, payload) => {
+    if (res.headersSent) return;
     res.writeHead(status, { "Content-Type": "application/json" });
     res.end(JSON.stringify(payload));
   };
+
+  form.on("error", (err) => {
+    console.error(`[${config.gymName}] Upload error:`, err.message);
+  });
 
   form.parse(req, (err, fields, files) => {
     if (err) {
